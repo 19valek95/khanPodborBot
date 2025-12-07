@@ -219,6 +219,7 @@ async def run_web_app():
 
 
 async def main():
+    print("MAIN started")
     print("Бот @KhanGroupPodborBot запускается...")
     # параллельно запускаем веб‑сервер и polling бота
     await asyncio.gather(
@@ -229,6 +230,7 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
 
 
 
