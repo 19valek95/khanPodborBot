@@ -1,3 +1,4 @@
+
 from aiogram import Bot, Dispatcher
 from aiogram.filters import CommandStart
 from aiogram.types import (
@@ -18,7 +19,7 @@ import os
 from aiohttp import web
 
 # === ТВОЙ ТОКЕН ===
-BOT_TOKEN = "7871439975:AAGvldMe67G6Rd2k76BlLrGlLJPrMRY0hho"
+BOT_TOKEN = "7871439975:AAGjA2k5HOMxL99kzhivbKHNcolQYIsOsAE"
 
 # === ID группы менеджеров ===
 MANAGERS_CHAT_ID = -5028203828
@@ -41,13 +42,13 @@ dp = Dispatcher(storage=storage)
 logging.basicConfig(level=logging.INFO)
 
 
-# Кнопка "Подбор Авто"
+# Кнопка "подбор"
 def podbor_button():
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [
                 InlineKeyboardButton(
-                    text="Подбор",
+                    text="Подбор Авто🚗",
                     url="https://t.me/KhanGroupPodborBot?start=podbor123",
                 )
             ]
@@ -81,23 +82,56 @@ async def start_cmd(message: Message, state: FSMContext):
 async def get_name(message: Message, state: FSMContext):
     await state.update_data(name=message.text.strip())
 
+    # Клавиатура с двумя кнопками:
+    # 1) отправить контакт
+    # 2) указать свой Telegram
     keyboard = ReplyKeyboardMarkup(
-        keyboard=[[KeyboardButton(text="Отправить номер", request_contact=True)]],
+        keyboard=[
+            [
+                KeyboardButton(text="Отправить номер☎", request_contact=True),
+            ],
+            [
+                KeyboardButton(text="Указать свой Telegram"),
+            ],
+        ],
         resize_keyboard=True,
+        one_time_keyboard=True,
     )
 
-    await message.answer("Теперь отправь номер телефона:", reply_markup=keyboard)
+    await message.answer(
+        "Теперь отправь номер телефона или укажи свой Telegram:",
+        reply_markup=keyboard,
+    )
     await state.set_state(CarOrder.waiting_phone)
 
 
-# Телефон
+# Телефон / Telegram
 @dp.message(CarOrder.waiting_phone)
 async def get_phone(message: Message, state: FSMContext):
-    phone = message.contact.phone_number if message.contact else message.text
+    # Если пользователь нажал "Отправить номер" и прислал контакт
+    if message.contact:
+        phone = message.contact.phone_number
+    # Если нажал "Указать свой Telegram"
+    elif message.text == "Указать свой Telegram":
+        if message.from_user.username:
+            phone = f"@{message.from_user.username}"
+        else:
+            # Если у пользователя нет username
+            await message.answer(
+                "У тебя не указан Telegram username в профиле.\n"
+                "Пожалуйста, напиши номер телефона вручную:",
+                reply_markup=ReplyKeyboardRemove(),
+            )
+            # остаёмся в том же состоянии waiting_phone
+            return
+    else:
+        # Любой другой текст – считаем введённым номером
+        phone = message.text.strip()
+
     await state.update_data(phone=phone)
 
     await message.answer(
-        "Укажи бюджет в $ (например: 15000-25000):",
+        "Укажи бюджет в $💰 (например: 15000-25000):",
         reply_markup=ReplyKeyboardRemove(),
     )
     await state.set_state(CarOrder.waiting_budget)
@@ -132,7 +166,7 @@ async def get_year(message: Message, state: FSMContext):
 async def get_mileage(message: Message, state: FSMContext):
     await state.update_data(mileage=message.text.strip())
     await message.answer(
-        "Дополнительные пожелания (цвет, привод и т.д.)\n"
+        "❗Дополнительные пожелания❗(цвет, привод и т.д.)\n"
         "Или напиши «без предпочтений»."
     )
     await state.set_state(CarOrder.waiting_additional)
@@ -147,9 +181,9 @@ async def get_additional(message: Message, state: FSMContext):
 
     # Сообщение менеджеру
     text = (
-        "НОВАЯ ЗАЯВКА!\n\n"
+        "✨НОВАЯ ЗАЯВКА!✨\n\n"
         f"Имя: {data['name']}\n"
-        f"Телефон: {data['phone']}\n"
+        f"Телефон / Telegram: {data['phone']}\n"
         f"Бюджет: {data['budget']} $\n"
         f"Модели: {data['models']}\n"
         f"Год: {data['year']}\n"
@@ -167,7 +201,7 @@ async def get_additional(message: Message, state: FSMContext):
     )
 
 
-# ======= запуск бота + простой веб‑сервер для Render =======
+# ======= простой веб‑сервер для Render =======
 async def handle(request):
     return web.Response(text="Bot is running")
 
