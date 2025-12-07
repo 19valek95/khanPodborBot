@@ -19,7 +19,7 @@ import os
 from aiohttp import web
 
 # === ТВОЙ ТОКЕН ===
-BOT_TOKEN = "7871439975:AAGjA2k5HOMxL99kzhivbKHNcolQYIsOsAE"
+BOT_TOKEN = "7871439975:AAGvldMe67G6Rd2k76BlLrGlLJPrMRY0hho"
 
 # === ID группы менеджеров ===
 MANAGERS_CHAT_ID = -5028203828
@@ -229,6 +229,7 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
 
 
 
