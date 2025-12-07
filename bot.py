@@ -41,7 +41,7 @@ dp = Dispatcher(storage=storage)
 logging.basicConfig(level=logging.INFO)
 
 
-# Кнопка "подбор"
+# Кнопка "Подбор Авто"
 def podbor_button():
     return InlineKeyboardMarkup(
         inline_keyboard=[
@@ -147,7 +147,7 @@ async def get_additional(message: Message, state: FSMContext):
 
     # Сообщение менеджеру
     text = (
-        "НОВАЯ ЗАЯВКА ИЗ КОРЕИ\n\n"
+        "НОВАЯ ЗАЯВКА!\n\n"
         f"Имя: {data['name']}\n"
         f"Телефон: {data['phone']}\n"
         f"Бюджет: {data['budget']} $\n"
@@ -195,6 +195,7 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
 
 
 
