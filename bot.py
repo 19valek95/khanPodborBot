@@ -6,8 +6,8 @@ from aiogram.types import Message
 from aiogram import F
 import asyncio
 
-TOKEN = "ВАШ_ТОКЕН"
-ADMIN_ID = 123456789  # ID куда отправлять заявки
+TOKEN = "7871439975:AAFGN_Uxig2W3NhqhN8bNQlDCM10XnJahHg"
+ADMIN_ID = -5028203828  # ID куда отправлять заявки
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
@@ -99,6 +99,7 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
 
 
 
